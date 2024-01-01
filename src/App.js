@@ -1,31 +1,38 @@
 import { HfInference } from '@huggingface/inference';
 import './App.css';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 function App() {
-  const [text, setText] = useState('')
+  const [result, setResult] = useState({ label: '', score: 0 });
   const hf = new HfInference(process.env.REACT_APP_HF_TOKEN);
 
-  const textToGenerate = "The definition of machine learning inference is ";
+  const textToClassify = "I have brought a new camera. I may or may not like this camera";
 
   const fetchData = async () => {
     try {
-      const response = await hf.textGeneration({
-        inputs: textToGenerate,
-        model: "mistralai/Mixtral-8x7B-Instruct-v0.1"
+      const response = await hf.textClassification({
+        inputs: textToClassify,
+        model: "distilbert-base-uncased-finetuned-sst-2-english"
       });
-      setText(response.generated_text)
+
+      console.log(response);
+      setResult(response[0] || { label: '', score: 0 });
     } catch (error) {
       console.error('Error fetching data:', error);
     }
   };
 
   // Call the asynchronous function
-  fetchData();
+  useEffect(() => {
+    fetchData();
+  }, []); // Run once when the component mounts
 
   return (
     <div className="App">
-      {text}
+      <p>
+        Label: {result.label}<br />
+        Score: {result.score}
+      </p>
     </div>
   );
 }

@@ -1,23 +1,30 @@
-import logo from './logo.svg';
+import { HfInference } from '@huggingface/inference';
 import './App.css';
+import { useState } from 'react';
 
 function App() {
+  const [text, setText] = useState('')
+  const hf = new HfInference(process.env.REACT_APP_HF_TOKEN);
+
+  const textToGenerate = "The definition of machine learning inference is ";
+
+  const fetchData = async () => {
+    try {
+      const response = await hf.textGeneration({
+        inputs: textToGenerate,
+      });
+      setText(response.generated_text)
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
+  // Call the asynchronous function
+  fetchData();
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {text}
     </div>
   );
 }

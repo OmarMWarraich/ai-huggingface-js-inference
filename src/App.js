@@ -32,11 +32,21 @@ const App = () => {
         }
       }
 
+      // Sort models by likes in descending order
+      fetchedModels.sort((model1, model2) => model2.likes - model1.likes);
+
       setModels(fetchedModels);
     };
 
     fetchModels();
   }, [token]);
+
+  // Log model details
+  useEffect(() => {
+    models.forEach((model) => {
+      console.log(`${model.likes} Likes: https://huggingface.co/${model.name}`);
+    });
+  }, [models]);
 
   return (
     <div>
@@ -44,8 +54,15 @@ const App = () => {
       <ul>
         {models.map((model) => (
           <li key={model.name}>
-            <p>Name: {model.name}</p>
-            <p>Likes: {model.likes}</p>
+            <p>
+              <strong>Name:</strong> {model.name}
+            </p>
+            <p>
+              <strong>Likes:</strong> {model.likes}
+            </p>
+            <p>
+              <strong>Details:</strong> <a href={`https://huggingface.co/${model.name}`}>View Model</a>
+            </p>
             {/* Add more details as needed */}
           </li>
         ))}

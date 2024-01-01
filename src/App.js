@@ -3,39 +3,32 @@ import './App.css';
 import { useState, useEffect } from 'react';
 
 function App() {
-  const [translation, setTranslation] = useState('');
   const hf = new HfInference(process.env.REACT_APP_HF_TOKEN);
 
-  const textToTranslate = "It's an exciting time to be an AI engineer"
+  const text = "It's an exciting time to be an A I engineer"
 
   const fetchData = async () => {
     try {
-      const response = await hf.translation({
-        inputs: textToTranslate,
-        model: "facebook/mbart-large-50-many-to-many-mmt",
-        parameters: {
-          src_lang: "en_XX",
-          tgt_lang: "ur_PK"
-        }
+      const response = await hf.textToSpeech({
+        inputs: text,
+        model: "facebook/mms-tts-eng",
       });
-
-      console.log(response.translation_text);
-      setTranslation(response.translation_text)
+      console.log(response);
+      const audioEl = document.getElementById('speech');
+      const speechUrl = URL.createObjectURL(response)
+      audioEl.src = speechUrl
     } catch (error) {
       console.error('Error fetching data:', error);
     }
   };
 
-  // Call the asynchronous function
   useEffect(() => {
     fetchData();
-  }, []); // Run once when the component mounts
+  }, [fetchData]);
 
   return (
     <div className="App">
-      <p>
-        {translation}
-      </p>
+      <audio id="speech" controls />
     </div>
   );
 }

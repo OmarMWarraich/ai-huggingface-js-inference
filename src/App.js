@@ -12,6 +12,7 @@ function App() {
     try {
       const response = await hf.textGeneration({
         inputs: textToGenerate,
+        model: "mistralai/Mixtral-8x7B-Instruct-v0.1"
       });
       setText(response.generated_text)
     } catch (error) {

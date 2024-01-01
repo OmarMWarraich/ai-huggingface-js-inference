@@ -3,26 +3,24 @@ import './App.css';
 import { useState, useEffect } from 'react';
 
 function App() {
-  const [results, setResults] = useState([{ label: '', score: 0 }]);
+  const [translation, setTranslation] = useState('');
   const hf = new HfInference(process.env.REACT_APP_HF_TOKEN);
 
-  const textsToClassify = [
-    "I have brought a new camera. I may or may not like this camera",
-    "I love Hugging Face",
-    "I do not like Binance"
-  ];
+  const textToTranslate = "It's an exciting time to be an AI engineer"
 
   const fetchData = async () => {
     try {
-      const responses = await Promise.all(textsToClassify.map(async (text) => {
-        return await hf.textClassification({
-          inputs: text,
-          model: "distilbert-base-uncased-finetuned-sst-2-english"
-        });
-      }));
+      const response = await hf.translation({
+        inputs: textToTranslate,
+        model: "facebook/mbart-large-50-many-to-many-mmt",
+        parameters: {
+          src_lang: "en_XX",
+          tgt_lang: "ur_PK"
+        }
+      });
 
-      console.log(responses);
-      setResults(responses.map(response => response[0] || { label: '', score: 0 }));
+      console.log(response.translation_text);
+      setTranslation(response.translation_text)
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -35,15 +33,9 @@ function App() {
 
   return (
     <div className="App">
-      {results.map((result, index) => (
-        <div key={index}>
-          <p>
-            Label: {result.label}<br />
-            Score: {result.score}
-          </p>
-          <hr />
-        </div>
-      ))}
+      <p>
+        {translation}
+      </p>
     </div>
   );
 }
